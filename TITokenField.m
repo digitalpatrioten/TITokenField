@@ -356,10 +356,29 @@
 
 - (void)presentpopoverAtTokenFieldCaretAnimated:(BOOL)animated {
 	
-    UITextPosition * position = [_tokenField positionFromPosition:_tokenField.beginningOfDocument offset:2];
-	
-	[_popoverController presentPopoverFromRect:[_tokenField caretRectForPosition:position] inView:_tokenField
-					 permittedArrowDirections:UIPopoverArrowDirectionUp animated:animated];
+    CGRect rect = [_tokenField caretRectForPosition:_tokenField.selectedTextRange.end];
+    
+    NSString *version = [[UIDevice currentDevice] systemVersion];
+    if([version hasPrefix:@"7."]){
+        
+        float plus = _tokenField.leftView.frame.size.width + 12;
+        if (_tokenField.tokens.count > 0) {
+            TIToken * tok = [_tokenField.tokens objectAtIndex:_tokenField.tokens.count - 1];
+            plus = tok.frame.origin.x + tok.frame.size.width + 6;
+            
+            if (plus > 690) {
+                plus = 10;
+            }
+        }
+        
+        rect = CGRectMake(rect.origin.x + plus, _tokenField.frame.size.height - 20, rect.size.width, rect.size.height);
+    }
+    else{
+        rect = CGRectMake(rect.origin.x, _tokenField.frame.size.height - 20, rect.size.width, rect.size.height);
+    }
+    
+	[_popoverController presentPopoverFromRect:rect inView:_tokenField
+                      permittedArrowDirections:UIPopoverArrowDirectionUp animated:animated];
 }
 
 #pragma mark Other
